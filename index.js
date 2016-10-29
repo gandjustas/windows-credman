@@ -1,1 +1,1 @@
-module.exports = require('bindings')('windows-credman');
+module.exports = require('./lib/windows-credman-'+process.arch);

@@ -8,46 +8,41 @@ using namespace v8;
 
 
 NAN_METHOD(GetCredentials) {  
-  auto isolate = info.GetIsolate();
-
   if (info.Length() < 1) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "You should provide saved credentials name")));
+    Nan::ThrowSyntaxError("You should provide saved credentials name");
     return;
   }
 
   if (!info[0]->IsString()) {
-    isolate->ThrowException(Exception::TypeError(
-        String::NewFromUtf8(isolate, "First parameter is not a string")));
+    Nan::ThrowSyntaxError("First parameter is not a string");
     return;
   }
 
-  auto targetNameValue = info[0]->ToString();
-  auto length = targetNameValue->Length();
-  auto buffer = new TCHAR[length];
+  auto targetName = info[0]->ToString();
+  auto length = targetName->Length();
+  
 
   #ifdef UNICODE
-    targetNameValue->Write((uint16_t *)buffer);
+    String::Value buffer(targetName);
   #else
-    targetNameValue->WriteOneByte((uint8_t *)buffer);
+    String::Utf8Value buffer(targetName);
   #endif
 
   PCREDENTIAL cred;
-  if(::CredRead(buffer, CRED_TYPE_GENERIC, 0, &cred))
+  if(::CredRead(*buffer, CRED_TYPE_GENERIC, 0, &cred))
   {
     auto blobSize = cred->CredentialBlobSize;
-    auto password = String::NewFromTwoByte(isolate, (uint16_t *)cred->CredentialBlob, NewStringType::kNormal, blobSize/2);
+  
     v8::Local<v8::Object> obj = Nan::New<v8::Object>();
 
     Nan::Set(obj, Nan::New("username").ToLocalChecked(), Nan::New(cred->UserName).ToLocalChecked());
-    Nan::Set(obj, Nan::New("password").ToLocalChecked(), password.ToLocalChecked());
+    Nan::Set(obj, Nan::New("password").ToLocalChecked(), Nan::New((uint16_t *)cred->CredentialBlob, blobSize/2).ToLocalChecked());
 
     info.GetReturnValue().Set(obj);
 
     ::CredFree(cred);
   }
 
-  delete[] buffer;
 }
 
 NAN_MODULE_INIT(InitAll) {
