@@ -1,0 +1,33 @@
+{
+  "name": "windows-credman",
+  "version": "1.0.0",
+  "description": "Native wrapper for Windows Credential Manager",
+  "os": [
+    "win32"
+  ],
+  "main": "index.js",
+  "gypfile": true,
+  "author": {
+    "name": "Stanislav Vyschepan",
+    "email": "gandjustas@mail.ru",
+    "url": "http://blog.gandjustas.ru/"
+  },
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/gandjustas/windows-credman.git"
+  },
+  "keywords": [
+    "windows",
+    "winapi",
+    "wincred.h",
+    "windows.h",
+    "credman",
+    "credential manager"
+  ],
+  "homepage": "https://github.com/gandjustas/windows-credman#readme",
+  "dependencies": {
+    "bindings": "^1.2.1",
+    "nan": "^2.4.0"
+  }
+}
